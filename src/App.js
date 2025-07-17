@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
   const [cep, setCep] = useState('');
@@ -7,6 +8,11 @@ function App() {
   const [error, setError] = useState('');
 
   const handleSearch = async () => {
+    if (cep.length !== 8) {
+      setError('CEP deve conter 8 dígitos');
+      return;
+    }
+
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
       if (response.data.erro) {
@@ -28,18 +34,19 @@ function App() {
       <input
         type="text"
         value={cep}
-        onChange={(e) => setCep(e.target.value)}
-        placeholder="Digite o CEP"
+        onChange={(e) => setCep(e.target.value.replace(/\D/g, ''))}
+        placeholder="Digite o CEP (apenas números)"
+        maxLength={8}
       />
       <button onClick={handleSearch}>Buscar</button>
       {error && <p className="error">{error}</p>}
       {address && (
         <div className="address">
-          <p>CEP: {address.cep}</p>
-          <p>Logradouro: {address.logradouro}</p>
-          <p>Bairro: {address.bairro}</p>
-          <p>Cidade: {address.localidade}</p>
-          <p>Estado: {address.uf}</p>
+          <p><strong>CEP:</strong> {address.cep}</p>
+          <p><strong>Logradouro:</strong> {address.logradouro}</p>
+          <p><strong>Bairro:</strong> {address.bairro}</p>
+          <p><strong>Cidade:</strong> {address.localidade}</p>
+          <p><strong>Estado:</strong> {address.uf}</p>
         </div>
       )}
     </div>
